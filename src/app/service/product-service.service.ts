@@ -22,11 +22,20 @@ export class ProductServiceService {
     }
   }
 
-  edit(product: Product) {
+  create(product: Product){
+    let check=true;
+
     for (let i = 0; i < this.products.length; i++) {
       if (this.products[i].id === product.id) {
         this.products[i] = product;
+        check = false;
       }
     }
+
+    if (check){
+      this.products.push(product);
+    }
   }
+
+
 }
