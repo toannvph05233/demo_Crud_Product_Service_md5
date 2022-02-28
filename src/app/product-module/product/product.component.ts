@@ -1,8 +1,9 @@
 import {EventEmitter} from '@angular/core';
 import {Component, Input, OnInit, Output} from '@angular/core';
-import {Product} from "../../models/Product";
-import {ProductServiceService} from "../service/product-service.service";
+import {Product} from "../../../models/Product";
+import {ProductServiceService} from "../../service/product-service.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-product',
@@ -14,12 +15,14 @@ export class ProductComponent implements OnInit {
 
   formCreate!: FormGroup;
 
-  constructor(private productService: ProductServiceService) {
+  constructor(private productService: ProductServiceService, private activatedRoute: ActivatedRoute, private router: Router) {
     this.products = productService.products;
   }
   product: Product = new Product(0, 0, "", "", true);
 
   ngOnInit(): void {
+    // alert(this.activatedRoute.snapshot.params['id']);
+
     this.formCreate = new FormGroup({
       id: new FormControl(0),
       name: new FormControl("",Validators.minLength(6)),
@@ -40,6 +43,7 @@ export class ProductComponent implements OnInit {
 
   delete(id: number) {
     this.productService.delete(id);
+    this.router.navigate(["/home"])
   }
 
   create() {
