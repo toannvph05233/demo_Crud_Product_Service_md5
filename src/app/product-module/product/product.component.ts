@@ -4,6 +4,7 @@ import {Product} from "../../../models/Product";
 import {ProductServiceService} from "../../service/product-service.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-product',
@@ -15,40 +16,58 @@ export class ProductComponent implements OnInit {
 
   formCreate!: FormGroup;
 
-  constructor(private productService: ProductServiceService, private activatedRoute: ActivatedRoute, private router: Router) {
-    this.products = productService.products;
+  constructor(private http: HttpClient, private productService: ProductServiceService, private activatedRoute: ActivatedRoute, private router: Router) {
+    this.findAlll();
   }
+
   product: Product = new Product(0, 0, "", "", true);
 
   ngOnInit(): void {
-    // alert(this.activatedRoute.snapshot.params['id']);
-
     this.formCreate = new FormGroup({
       id: new FormControl(0),
-      name: new FormControl("",Validators.minLength(6)),
-      img: new FormControl(null,[Validators.required, Validators.minLength(10)]),
-      price: new FormControl(0,Validators.pattern('[1-4]')),
+      name: new FormControl("", Validators.minLength(6)),
+      img: new FormControl(null, [Validators.required, Validators.minLength(10)]),
+      price: new FormControl(0, Validators.pattern('[1-4]')),
       status: new FormControl(true)
     })
   }
 
+  findAlll() {
+    this.http.get<Product[]>('http://localhost:8080/products').subscribe(data => {
+      this.products = data;
+    }, error => {
+
+    })
+  }
+
   showEdit(product: Product) {
-    this.product = new Product(product.id, product.price, product.name, product.img, product.status);
+    this.productService.findById(product.id).subscribe((data) => {
+      this.product = data;
+    })
   }
 
   edit(formEdit: any) {
-    console.log(formEdit)
-    this.productService.create(formEdit);
+    this.productService.edit(formEdit).subscribe(() => {
+      alert("edit thành công");
+      this.findAlll();
+
+    })
   }
 
   delete(id: number) {
-    this.productService.delete(id);
-    this.router.navigate(["/home"])
+    this.productService.delete(id).subscribe(() => {
+      alert("xóa thành công");
+      this.findAlll();
+    })
+
   }
 
   create() {
-    console.log(this.formCreate)
-    this.productService.create(this.formCreate.value);
+    this.productService.create(this.formCreate.value).subscribe(() => {
+      alert("create thành công");
+      this.findAlll();
+    })
+
   }
 
 }

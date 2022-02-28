@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
   products: Product[] = []
 
   constructor(private productService: ProductServiceService) {
-    this.products = productService.products;
+    // this.products = productService.products;
   }
 
 
